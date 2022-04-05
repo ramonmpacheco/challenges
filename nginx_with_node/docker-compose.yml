@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ./node
+    container_name: app
+    entrypoint:
+      [
+        "dockerize",
+        "-wait",
+        "tcp://db:3306",
+        "-timeout",
+        "20s",
+        "docker-entrypoint.sh"
+      ]
+    command: [ "node", "index.js" ]
+    tty: true
+    networks:
+      - challenge-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql/data/:/var/lib/mysql
+      - ./mysql/scripts/create-people-table.sql:/docker-entrypoint-initdb.d/create-people-table.sql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - challenge-network
+
+  proxy:
+    build:
+      context: ./proxy
+    container_name: proxy
+    ports:
+      - "8080:80"
+    networks:
+      - challenge-network
+
+networks:
+  challenge-network:
+    driver: bridge
