@@ -8,3 +8,9 @@ PARA ACESSAR A APP USE O ENDEREÇO:
 ```
 http://localhost:8080/
 ```
+
+FUNCIONAMENTO
+
+Cada vez que a página for atualizada será produzido um novo nome e sobrenome, limitado a 6 cada.
+
+Também está sendo persistido no banco de dados.
